@@ -1,92 +1,35 @@
-import { useEffect, useState } from 'react'
-import './App.css'
-import web3 from 'web3'
+import { useEffect, useState } from "react";
+import "./App.css";
+import { CONTRACT_ABI, CONTRACT_ADDRESS } from "./config";
+import { ethers } from "ethers";
+
 function App() {
-  const provider = window.ethereum;
-  const [account,setAccount] = useState();
-  const [balance,setBalance] = useState(0);
+  const [contract, setContract] = useState(null);
 
+  useEffect(() => {
 
-  async function switchToLinea() {
-    const provider = window.ethereum;
-    
-    const lineaChainId = '0xe705';
-    
-    try {
-      await provider.request({
-        method: 'wallet_switchEthereumChain',
-        params: [{ chainId: lineaChainId }],
-      });
-      console.log("Switched to Linea network");
-    } catch (switchError) {
-      if (switchError.code === 4902) {
-        try {
-          await provider.request({
-            method: 'wallet_addEthereumChain',
-            params: [{
-              chainId: lineaChainId,
-              chainName: 'Linea',
-              nativeCurrency: {
-                name: 'Ether',
-                symbol: 'ETH',
-                decimals: 18,
-              },
-              blockExplorerUrls: ['https://explorer.linea.build/'],
-            }],
-          });
-          console.log("Added Linea network and switched to it");
-        } catch (addError) {
-          console.error("Failed to add Linea network:", addError);
-        }
-      } else {
-        console.error("Failed to switch to Linea network:", switchError);
-      }
-    }
-  }
-
-  useEffect(()=>{
-    async function getAccounts () {
-      await provider.request({ method: 'eth_requestAccounts' });
-      const hello = await window.ethereum.request({
-        "method": "eth_accounts",
-        "params": [],
-       });
-
-       return hello;
+    async function getSettle(){
+      const provider = new ethers.BrowserProvider(window.ethereum);
+      const signer = await provider.getSigner()
+      const contract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, signer);
+      setContract(contract);
+      console.log("done")
     }
 
-    getAccounts().then((res)=>{
-      setAccount(res[0]);
-    })
+    getSettle();
     
-  },[])
+  }, []);
 
-  function checkBalance(){
-    async function check(){
-      const res = await window.ethereum.request({
-        "method": "eth_getBalance",
-        "params": [
-         account,
-         "latest"
-       ],
-       });
-       const bal = web3.utils.fromWei(res,'ether');
-       setBalance(bal)
-       return res;
-    }
-    
-    check().then((res)=>{
-      console.log(res)
-    })
+  async function textChange(){
+    const tx = await contract.changeWelcome("snfn");
+    console.log(tx)
   }
 
   return (
     <div className="container">
-      <button onClick={checkBalance}>Check Balance</button>
-      <br />
-      <h1>balance: {balance}</h1>
+      <button onClick={textChange}>Call Smart Contract</button>
     </div>
-  )
+  );
 }
 
-export default App
+export default App;
