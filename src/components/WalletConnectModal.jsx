@@ -3,7 +3,11 @@ import { Button, Modal } from "antd";
 import { Spin } from "antd";
 import { toast } from "sonner";
 
-const ConnectWalletModal = ({ isUserConnected }) => {
+const ConnectWalletModal = ({
+  setIsUserConnected,
+  setAccounts,
+  isUserConnected,
+}) => {
   const [walletConnecting, setWalletConnecting] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -15,6 +19,12 @@ const ConnectWalletModal = ({ isUserConnected }) => {
         method: "eth_requestAccounts",
         params: [],
       });
+      const res = await window.ethereum.request({
+        method: "eth_accounts",
+        params: [],
+      });
+      setAccounts(res);
+      setIsUserConnected(true);
       toast.success("Wallet connected successfully");
     } catch (e) {
       toast.error("Wallet access denied");
