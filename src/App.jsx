@@ -1,54 +1,13 @@
 import { useEffect, useState } from "react";
 import "./App.css";
-import { CONTRACT_ABI, CONTRACT_ADDRESS } from "./config";
-import { ethers } from "ethers";
-import { Button, Flex } from "antd";
-import ConnectWalletModal from "./components/WalletConnectModal";
-import { Toaster, toast } from "sonner";
+import Navbar from "./components/Navbar";
 
 function App() {
-  const [isUserConnected, setIsUserConnected] = useState(false);
-  const [accounts, setAccounts] = useState();
-
-  useEffect(() => {
-    function getAccounts() {
-      if (!window.ethereum) {
-        toast.error("Wallets not detected!!");
-        
-        return;
-      }
-      window.ethereum
-        .request({
-          method: "eth_accounts",
-          params: [],
-        })
-        .then((res) => {
-          if (res.length == 0) {
-            alert("User is not connected");
-          } else {
-            setIsUserConnected(true);
-            setAccounts(res);
-          }
-        });
-    }
-
-    getAccounts();
-  }, []);
 
   return (
-    <main>
-      <nav className="shadow-md border-b-[0.5px] py-4 flex justify-between">
-        <div className="flex w-full justify-between px-4">
-          <h1 className="text-3xl font-bold">dConnect</h1>
-          <ConnectWalletModal
-            setIsUserConnected={setIsUserConnected}
-            setAccounts={setAccounts}
-            isUserConnected={isUserConnected}
-          />
-        </div>
-      </nav>
-      <Toaster />
-    </main>
+    <>
+    <Navbar/>
+    </>
   );
 }
 
@@ -58,7 +17,7 @@ export default App;
 
 // useEffect(() => {
 //   async function getSettle(){
-//     const provider = new ethers.BrowserProvider(window.ethereum);
+//
 //     const signer = await provider.getSigner();
 //     const contract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, signer);
 //     setContract(contract);
