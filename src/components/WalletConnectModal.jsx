@@ -13,7 +13,11 @@ const ConnectWalletModal = ({
 
   async function requestWalletConnection() {
     setWalletConnecting(true);
-
+    if (!window.ethereum) {
+      toast.error("Wallets not detected!!");
+      setWalletConnecting(false);
+      return;
+    }
     try {
       await window.ethereum.request({
         method: "eth_requestAccounts",

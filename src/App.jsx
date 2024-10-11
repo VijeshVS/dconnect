@@ -11,19 +11,28 @@ function App() {
   const [accounts, setAccounts] = useState();
 
   useEffect(() => {
-    window.ethereum
-      .request({
-        method: "eth_accounts",
-        params: [],
-      })
-      .then((res) => {
-        if (res.length == 0) {
-          alert("User is not connected");
-        } else {
-          setIsUserConnected(true);
-          setAccounts(res);
-        }
-      });
+    function getAccounts() {
+      if (!window.ethereum) {
+        toast.error("Wallets not detected!!");
+        
+        return;
+      }
+      window.ethereum
+        .request({
+          method: "eth_accounts",
+          params: [],
+        })
+        .then((res) => {
+          if (res.length == 0) {
+            alert("User is not connected");
+          } else {
+            setIsUserConnected(true);
+            setAccounts(res);
+          }
+        });
+    }
+
+    getAccounts();
   }, []);
 
   return (
